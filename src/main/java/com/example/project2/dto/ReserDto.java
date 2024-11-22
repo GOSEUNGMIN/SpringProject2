@@ -12,12 +12,18 @@ import java.time.LocalDateTime;
 @Data
 @Entity
 @Table(name = "reser")
-public class ReserDto
-{
+public class ReserDto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int no;
+    private Integer no;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserDto userId;
+
     private LocalDateTime time;
-    private String userId;
-    private int shopNo;
+
+    @ManyToOne
+    @JoinColumn(name = "shop_no")
+    private ShopDto shopNo;
 }

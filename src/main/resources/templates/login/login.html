@@ -25,14 +25,14 @@
             <input type="password" id="password" name="password" class="form-control" required>
           </div>
         </div>
+        <div th:if="${msg != null}" class="mt-3">
+          <p th:text="${msg}" class="text-danger"></p>
+        </div>
         <div class="d-grid gap-2">
           <button type="submit" class="btn btn-primary">로그인</button>
           <a class="btn btn-danger" th:href="@{/register}">회원가입</a>
         </div>
       </form>
-      <div th:if="${msg != null}" class="mt-3">
-        <p th:text="${msg}" class="text-danger"></p>
-      </div>
     </div>
   </div>
 </div>

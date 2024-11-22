@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "users")
-public class UserDto
-{
+public class UserDto {
     @Id
     private String id;
     private String password;
     private String username;
+    private String email;
     private int role;
 }
