@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,8 +36,7 @@ public class ShopController {
     }
 
     @GetMapping("/writer")
-    public String writer()
-    {
+    public String writer() {
         UserDto user = (UserDto) session.getAttribute("user");
         if (user == null || user.getRole() == 3) {
             return "redirect:/shop";
@@ -51,12 +51,14 @@ public class ShopController {
     }
 
     @GetMapping("/detail/{no}")
-    public String detail(@PathVariable("no") Integer no, Model model) {
+    public String detail(@PathVariable("no") Integer no, @Validated ShopDto dto, Model model) {
         UserDto user = (UserDto) session.getAttribute("user");
         if (user == null) {
             return "redirect:/shop";
         }
         ShopDto shop = shopService.detailList(no);
+        boolean isReserved = shopService.isReserved(dto, user);
+        model.addAttribute("isReserved", isReserved);
         model.addAttribute("detaillist", shop);
         return "shop/detail";
     }
@@ -72,6 +74,11 @@ public class ShopController {
         model.addAttribute("nowtime", formattedTime);
         model.addAttribute("detaillist", shop);
         return "shop/reserdetail";
+    }
+    @PostMapping("/cancel/{no}")
+    public String cancel(ShopDto shopno) {
+        shopService.reserDelete(shopno);
+        return "redirect:/mypage";
     }
 
     @GetMapping("/modify/{no}")

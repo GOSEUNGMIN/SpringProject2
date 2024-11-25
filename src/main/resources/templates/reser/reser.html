@@ -37,7 +37,7 @@
       <th>가게내용</th>
       <th>예약시간</th>
     </tr>
-    <tr th:each="manage : ${manage}" th:object="${manage}"
+    <tr th:each="manage : ${manager}" th:object="${manage}"
         th:onclick="window.location='reser/manager/' + [[${manage.no}]]" style="cursor: pointer;">
       <td>
         <span th:text="*{no}"></span>
@@ -45,11 +45,11 @@
       <td>
         <span th:text="*{name}"></span>
       </td>
-      <td>
+      <td style="max-width: 50px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
         <span th:text="*{detail}"></span>
       </td>
-      <td>
-        <span th:text="*{time}"></span>
+      <td style="max-width: 30px;">
+        <span th:text="*{formattedtime}"></span>
       </td>
     </tr>
   </table>

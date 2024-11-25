@@ -27,7 +27,7 @@ public class ReserController {
             return "redirect:/login";
         }
         List<ShopDto> dto = shopService.ReserManage(user);
-        model.addAttribute("manage", dto);
+        model.addAttribute("manager", dto);
         return "reser/reser";
     }
 

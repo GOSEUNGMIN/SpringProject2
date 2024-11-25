@@ -45,11 +45,11 @@
       <td>
         <span th:text="*{name}"></span>
       </td>
-      <td>
+      <td style="max-width: 50px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
         <span th:text="*{detail}"></span>
       </td>
-      <td>
-        <span th:text="*{time}"></span>
+      <td style="max-width: 30px;">
+        <span th:text="*{formattedtime}"></span>
       </td>
     </tr>
   </table>

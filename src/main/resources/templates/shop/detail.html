@@ -10,14 +10,17 @@
 <div class="container-fluid text-center">
     <h2 style="padding-top: 3%;" th:text="${detaillist.name}"></h2>
     <div class="container-fluid" style="padding: 2% 20%">
-        <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1">음식점 이름</span>
-            <input type="text" class="form-control" aria-label="name" aria-describedby="basic-addon1" th:value="${detaillist.name}" required readonly>
-        </div>
         <div class="input-group" style="margin-bottom: 20px">
             <span class="input-group-text">음식점 상세</span>
             <textarea style="height: 200px;" class="form-control" aria-label="With textarea" th:text="${detaillist.detail}" required readonly></textarea>
         </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon">가게 주소</span>
+            <input type="text" class="form-control"
+                   th:value="'(' + ${detaillist.postcode} + ') ' + ${detaillist.address} + ' (' + ${detaillist.detailAddress} + ')'"
+                   aria-label="userId" aria-describedby="basic-addon1" name="userId" readonly>
+        </div>
+        <div id="map" style="width:500px;height:400px;"></div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon2">가게 등록자</span>
             <input type="text" class="form-control" th:value="${detaillist.userId.id}"
@@ -25,12 +28,12 @@
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon3">가게 등록시간</span>
-            <input type="text" class="form-control" th:value="${detaillist.time}"
+            <input type="text" class="form-control" th:value="${detaillist.formattedtime}"
                    aria-label="userId" aria-describedby="basic-addon1" readonly>
         </div>
         <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
-            <a style="padding: 10px 20px;" th:href="@{/shop/reser/{no}(no=${detaillist.no})}" class="btn btn-warning">예약</a>
-            <form th:if="${session.user.id == detaillist.userId.id}"
+            <a style="padding: 10px 20px;" th:if="${!isReserved and session.user.id != detaillist.userId.id}" th:href="@{/shop/reser/{no}(no=${detaillist.no})}" class="btn btn-warning">예약</a>
+            <form th:if="${isReserved}"
                   th:action="@{/shop/cancel/{no}(no=${detaillist.no})}" method="post"
                   onsubmit="return confirm('정말로 예약을 취소하시겠습니까?');">
                 <button style="padding: 10px 20px;" type="submit" class="btn btn-danger">예약취소</button>
@@ -47,4 +50,48 @@
     </div>
 </div>
 </body>
+<div id="detaillist-name" th:data-name="${detaillist.name}"></div>
+<div id="detaillist-address" th:data-name="${detaillist.address}"></div>
 </html>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=0ceb3e17b252ed79406ea39a0ad372b8&libraries=services"></script>
+<script>
+    var ShopName = document.getElementById("detaillist-name").getAttribute("data-name");
+    var ShopAddress = document.getElementById("detaillist-address").getAttribute("data-name");
+
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+        mapOption = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+            level: 3 // 지도의 확대 레벨
+        };
+
+    // 지도를 생성합니다
+    var map = new kakao.maps.Map(mapContainer, mapOption);
+
+    // 주소-좌표 변환 객체를 생성합니다
+    var geocoder = new kakao.maps.services.Geocoder();
+
+    // 주소로 좌표를 검색합니다
+    geocoder.addressSearch(ShopAddress, function(result, status) {
+
+        // 정상적으로 검색이 완료됐으면
+        if (status === kakao.maps.services.Status.OK) {
+
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+
+            // 결과값으로 받은 위치를 마커로 표시합니다
+            var marker = new kakao.maps.Marker({
+                map: map,
+                position: coords
+            });
+
+            // 인포윈도우로 장소에 대한 설명을 표시합니다
+            var infowindow = new kakao.maps.InfoWindow({
+                content: '<div style="width:150px;text-align:center;padding:6px 0;">' + ShopName + '</div>'
+            });
+            infowindow.open(map, marker);
+
+            // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+            map.setCenter(coords);
+        }
+    });
+</script>

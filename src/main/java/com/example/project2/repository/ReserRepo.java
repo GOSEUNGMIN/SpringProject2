@@ -14,11 +14,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReserRepo extends JpaRepository<ReserDto, Integer> {
+public interface ReserRepo extends JpaRepository<ReserDto, Long> {
     List<ReserDto> findByUserIdOrderByNoDesc(UserDto user);
     @EntityGraph(attributePaths = {"shopNo", "userId"})
     List<ReserDto> findAllByOrderByResertimeDesc();
     List<ReserDto> findByShopNo(ShopDto shopNo);
     void deleteByShopNo(ShopDto shopNo);
+    Optional<ReserDto> findByShopNoAndUserId(ShopDto shopNo, UserDto userId);
 
 }

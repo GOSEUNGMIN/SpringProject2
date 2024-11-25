@@ -62,7 +62,17 @@ public class ShopService {
     }
 
     public void reserSave(ReserDto dto) {
+        dto.setStatus(1);
         reserRepo.save(dto);
+    }
+
+    @Transactional
+    public void reserDelete(ShopDto shopno) {
+        reserRepo.deleteByShopNo(shopno);
+    }
+    public boolean isReserved(ShopDto shopNo, UserDto userId) {
+        Optional<ReserDto> reservation = reserRepo.findByShopNoAndUserId(shopNo, userId);
+        return reservation.isPresent(); // 존재 true, 없으면 false
     }
 
     public List<ReserDto> reserList(UserDto user) {
