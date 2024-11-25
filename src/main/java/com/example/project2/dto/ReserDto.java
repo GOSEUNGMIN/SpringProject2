@@ -21,7 +21,8 @@ public class ReserDto {
     @JoinColumn(name = "user_id")
     private UserDto userId;
 
-    private LocalDateTime time;
+    private LocalDateTime resertime;
+    private String reserdetail;
 
     @ManyToOne
     @JoinColumn(name = "shop_no")

@@ -17,7 +17,7 @@ import java.util.Optional;
 public interface ReserRepo extends JpaRepository<ReserDto, Integer> {
     List<ReserDto> findByUserIdOrderByNoDesc(UserDto user);
     @EntityGraph(attributePaths = {"shopNo", "userId"})
-    List<ReserDto> findAllByOrderByTimeDesc();
+    List<ReserDto> findAllByOrderByResertimeDesc();
     List<ReserDto> findByShopNo(ShopDto shopNo);
     void deleteByShopNo(ShopDto shopNo);
 

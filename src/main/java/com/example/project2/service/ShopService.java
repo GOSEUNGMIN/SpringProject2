@@ -62,7 +62,6 @@ public class ShopService {
     }
 
     public void reserSave(ReserDto dto) {
-        dto.setTime(LocalDateTime.now());
         reserRepo.save(dto);
     }
 
@@ -71,7 +70,7 @@ public class ShopService {
     }
 
     public List<ReserDto> reserAdminList() {
-        return reserRepo.findAllByOrderByTimeDesc();
+        return reserRepo.findAllByOrderByResertimeDesc();
     }
 
     public ShopDto detailList(Integer no) {

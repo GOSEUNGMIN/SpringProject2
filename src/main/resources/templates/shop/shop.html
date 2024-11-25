@@ -35,7 +35,7 @@
       <th>번호</th>
       <th>가게이름</th>
       <th>가게내용</th>
-      <th>작성시간</th>
+      <th>등록시간</th>
     </tr>
     <tr th:each="item : ${shoplist}" th:object="${item}"
         th:onclick="window.location='shop/detail/' + [[${item.no}]]" style="cursor: pointer;">

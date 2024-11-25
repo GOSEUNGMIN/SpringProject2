@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -57,6 +59,19 @@ public class ShopController {
         ShopDto shop = shopService.detailList(no);
         model.addAttribute("detaillist", shop);
         return "shop/detail";
+    }
+    @GetMapping("/reser/{no}")
+    public String reser(@PathVariable("no") Integer no, Model model) {
+        UserDto user = (UserDto) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/shop";
+        }
+        ShopDto shop = shopService.detailList(no);
+        LocalDateTime now = LocalDateTime.now();
+        String formattedTime = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+        model.addAttribute("nowtime", formattedTime);
+        model.addAttribute("detaillist", shop);
+        return "shop/reserdetail";
     }
 
     @GetMapping("/modify/{no}")
