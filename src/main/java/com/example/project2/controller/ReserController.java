@@ -3,16 +3,17 @@ package com.example.project2.controller;
 import com.example.project2.dto.ReserDto;
 import com.example.project2.dto.ShopDto;
 import com.example.project2.dto.UserDto;
+import com.example.project2.repository.ReserRepo;
 import com.example.project2.service.ShopService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ import java.util.List;
 public class ReserController {
     private final HttpSession session;
     private final ShopService shopService;
+    private final ReserRepo reserRepo;
     @GetMapping
     public String reser(Model model) {
         UserDto user = (UserDto) session.getAttribute("user");
@@ -38,7 +40,18 @@ public class ReserController {
             return "redirect:/login";
         }
         List<ReserDto> manager = shopService.reserManageListByShopNo(no);
+        Long count = reserRepo.count();
+        model.addAttribute("count", count);
         model.addAttribute("managedetail",manager);
         return "reser/manager";
+    }
+    @PostMapping("/updateStatus")
+    public String updateStatus(@RequestParam("userId") UserDto userId, @RequestParam("status")int status,
+                               @RequestParam("shopNo") ShopDto shopNo) {
+        // 예약 상태 업데이트 처리
+        shopService.updateStatus(userId, shopNo, status);
+
+        // 처리 완료 후 목록으로 리다이렉트
+        return "redirect:/reser/manager";
     }
 }

@@ -35,10 +35,13 @@
       <th>가게번호</th>
       <th>가게이름</th>
       <th>가게내용</th>
-      <th>예약상태</th>
       <th>예약시간</th>
+      <th>예약상태</th>
     </tr>
-    <tr th:each="reser : ${reserlist}" th:object="${reser}"
+    <tr th:if="${reserlist.size()} == 0">
+      <td colspan="5" style="text-align: center;">예약 정보가 없습니다.</td>
+    </tr>
+    <tr th:if="${reserlist != null}" th:each="reser : ${reserlist}" th:object="${reser}"
         th:onclick="window.location='shop/detail/' + [[*{shopNo.no}]]" style="cursor: pointer;">
       <td style="max-width: 30px;">
         <span th:text="*{shopNo.no}"></span>
@@ -49,15 +52,15 @@
       <td style="max-width: 30px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
         <span th:text="*{shopNo.detail}"></span>
       </td>
+      <td style="max-width: 50px;">
+        <span th:text="*{formattedresertime}"></span>
+      </td>
       <td>
         <span th:switch="*{status}">
         <span th:case="1" style="color:green; font-weight: bold">예약대기</span>
         <span th:case="2" style="color:blue; font-weight: bold">예약완료</span>
         <span th:case="3" style="color:red; font-weight: bold">예약취소</span>
     </span>
-      </td>
-      <td style="max-width: 50px;">
-        <span th:text="*{formattedresertime}"></span>
       </td>
     </tr>
   </table>

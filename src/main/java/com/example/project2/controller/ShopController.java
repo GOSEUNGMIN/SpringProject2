@@ -3,6 +3,7 @@ package com.example.project2.controller;
 import com.example.project2.dto.ReserDto;
 import com.example.project2.dto.ShopDto;
 import com.example.project2.dto.UserDto;
+import com.example.project2.repository.ReserRepo;
 import com.example.project2.service.ShopService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ import java.util.List;
 public class ShopController {
     private final HttpSession session;
     private final ShopService shopService;
+    private final ReserRepo reserRepo;
     @GetMapping
     public String shop(Model model) {
         Object user = session.getAttribute("user");
@@ -57,8 +60,18 @@ public class ShopController {
             return "redirect:/shop";
         }
         ShopDto shop = shopService.detailList(no);
-        boolean isReserved = shopService.isReserved(dto, user);
+        boolean isReserved = shopService.isReserved(dto, user);  // 예약이 되어 있으면 true, 아니면 false
+        boolean isCancelled = false;
+        if (isReserved) {
+            // 예약이 되어 있으면, 해당 예약 상태를 확인하여 취소되었는지 확인
+            Optional<ReserDto> reservation = reserRepo.findByShopNoAndUserIdAndStatusNot(shop, user, 3);
+            if (reservation.isPresent() && reservation.get().getStatus() == 3) {  // 상태가 '취소'이면
+                isCancelled = true;
+                isReserved = false;
+            }
+        }
         model.addAttribute("isReserved", isReserved);
+        model.addAttribute("isCancelled", isCancelled);
         model.addAttribute("detaillist", shop);
         return "shop/detail";
     }
@@ -76,8 +89,12 @@ public class ShopController {
         return "shop/reserdetail";
     }
     @PostMapping("/cancel/{no}")
-    public String cancel(ShopDto shopno) {
-        shopService.reserDelete(shopno);
+    public String cancel(@PathVariable ShopDto no) {
+        UserDto user = (UserDto) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+        shopService.reserDelete(no, user);
         return "redirect:/mypage";
     }
 

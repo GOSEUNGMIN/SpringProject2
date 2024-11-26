@@ -12,7 +12,8 @@
 <div class="container-fluid text-center">
   <h2 style="padding-top: 3%;">음식점 정보 수정</h2>
   <div class="container-fluid" style="padding: 2% 20%">
-    <form th:action = "@{/shop/modify/{no}(no=${modify.no})}" th:method = "post">
+    <form th:action = "@{/shop/modify/{no}(no=${modify.no})}" th:method = "post"
+          onsubmit="return confirm('음식점 정보를 수정 하시겠습니까?');">
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon1">음식점 이름</span>
         <input type="text" class="form-control" aria-label="name"

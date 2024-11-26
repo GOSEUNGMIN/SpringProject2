@@ -18,13 +18,13 @@
             <span class="input-group-text" id="basic-addon">가게 주소</span>
             <input type="text" class="form-control"
                    th:value="'(' + ${detaillist.postcode} + ') ' + ${detaillist.address} + ' (' + ${detaillist.detailAddress} + ')'"
-                   aria-label="userId" aria-describedby="basic-addon1" name="userId" readonly>
+                   aria-label="userId" aria-describedby="basic-addon1" readonly>
         </div>
         <div id="map" style="width:500px;height:400px;"></div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon2">가게 등록자</span>
             <input type="text" class="form-control" th:value="${detaillist.userId.id}"
-                   aria-label="userId" aria-describedby="basic-addon1" name="userId" readonly>
+                   aria-label="userId" aria-describedby="basic-addon1" readonly>
         </div>
         <div class="input-group mb-3">
             <span class="input-group-text" id="basic-addon3">가게 등록시간</span>
@@ -33,7 +33,7 @@
         </div>
         <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
             <a style="padding: 10px 20px;" th:if="${!isReserved and session.user.id != detaillist.userId.id}" th:href="@{/shop/reser/{no}(no=${detaillist.no})}" class="btn btn-warning">예약</a>
-            <form th:if="${isReserved}"
+            <form th:if="${isReserved and !isCancelled}"
                   th:action="@{/shop/cancel/{no}(no=${detaillist.no})}" method="post"
                   onsubmit="return confirm('정말로 예약을 취소하시겠습니까?');">
                 <button style="padding: 10px 20px;" type="submit" class="btn btn-danger">예약취소</button>
@@ -45,7 +45,7 @@
             </form>
             <a th:if="${session.user.role != 3 and session.user.id == detaillist.userId.id || session.user.role == 1}"
                class="btn btn-primary" th:href="@{/shop/modify/{no}(no=${detaillist.no})}">수정</a>
-            <a style="padding: 10px 20px;" class="btn btn-success" th:href="@{/shop}">게시판으로</a>
+            <a style="padding: 10px 20px;" class="btn btn-success" th:href="@{/shop}">목록</a>
         </div>
     </div>
 </div>

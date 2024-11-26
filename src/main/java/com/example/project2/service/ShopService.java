@@ -58,7 +58,7 @@ public class ShopService {
     }
     public List<ReserDto> reserManageListByShopNo(Integer shopNo) {
         ShopDto shop = shopRepo.findById(shopNo).orElseThrow(() -> new RuntimeException("Shop not found"));
-        return reserRepo.findByShopNo(shop);
+        return reserRepo.findByShopNoOrderByNoDesc(shop);
     }
 
     public void reserSave(ReserDto dto) {
@@ -67,11 +67,16 @@ public class ShopService {
     }
 
     @Transactional
-    public void reserDelete(ShopDto shopno) {
-        reserRepo.deleteByShopNo(shopno);
+    public void reserDelete(ShopDto shopNo, UserDto userId) {
+        Optional<ReserDto> reservation = reserRepo.findByShopNoAndUserIdAndStatusNot(shopNo, userId, 3);
+        if (reservation.isPresent()) {
+            ReserDto reserDto = reservation.get();
+            reserDto.setStatus(3);
+            reserRepo.save(reserDto);
+        }
     }
     public boolean isReserved(ShopDto shopNo, UserDto userId) {
-        Optional<ReserDto> reservation = reserRepo.findByShopNoAndUserId(shopNo, userId);
+        Optional<ReserDto> reservation = reserRepo.findByShopNoAndUserIdAndStatusNot(shopNo, userId, 3);
         return reservation.isPresent(); // 존재 true, 없으면 false
     }
 
@@ -99,4 +104,11 @@ public class ShopService {
         shopRepo.delete(shop);
     }
 
+    public void updateStatus(UserDto userId, ShopDto shopNo, int status) {
+        ReserDto dto = reserRepo.findByUserIdAndShopNo(userId, shopNo);
+        if (dto != null) {
+            dto.setStatus(status);
+            reserRepo.save(dto);
+        }
+    }
 }

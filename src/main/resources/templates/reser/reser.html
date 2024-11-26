@@ -37,7 +37,10 @@
       <th>가게내용</th>
       <th>예약시간</th>
     </tr>
-    <tr th:each="manage : ${manager}" th:object="${manage}"
+    <tr th:if="${manager.size()} == 0">
+      <td colspan="5" style="text-align: center;">예약 정보가 없습니다.</td>
+    </tr>
+    <tr th:if="${manager} != null" th:each="manage : ${manager}" th:object="${manage}"
         th:onclick="window.location='reser/manager/' + [[${manage.no}]]" style="cursor: pointer;">
       <td>
         <span th:text="*{no}"></span>
@@ -54,7 +57,7 @@
     </tr>
   </table>
   <p th:if="${session.user.role != 3}" class="d-flex justify-content-center">
-    <a class="btn btn-primary" th:href="@{shop/writer}">글쓰기</a>
+    <a class="btn btn-primary" th:href="@{shop/writer}">가게 등록</a>
   </p>
 </div>
 </body>
