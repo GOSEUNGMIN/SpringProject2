@@ -13,7 +13,7 @@ public interface ReserRepo extends JpaRepository<ReserDto, Long> {
     List<ReserDto> findByUserIdOrderByNoDesc(UserDto user);
     @EntityGraph(attributePaths = {"shopNo", "userId"})
     List<ReserDto> findAllByOrderByResertimeDesc();
-    ReserDto findByUserIdAndShopNo(UserDto userId, ShopDto shopNo);
+    ReserDto findByUserIdAndShopNoAndNo(UserDto userId, ShopDto shopNo, Integer no);
     List<ReserDto> findByShopNoOrderByNoDesc(ShopDto shopNo);
     void deleteByShopNo(ShopDto shopNo);
     Optional<ReserDto> findByShopNoAndUserIdAndStatusNot(ShopDto shopNo, UserDto userId, int status);

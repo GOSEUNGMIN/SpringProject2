@@ -7,10 +7,11 @@ import com.example.project2.repository.ReserRepo;
 import com.example.project2.repository.ShopRepo;
 import com.example.project2.repository.UserRepo;
 import jakarta.mail.MessagingException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,8 @@ public class ShopService {
     private final ReserRepo reserRepo;
     private final HttpSession session;
     private final MailService mailService;
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public boolean login(UserDto dto) {
         Optional<UserDto> result = userRepo.findByIdAndPassword(dto.getId(), dto.getPassword());
@@ -114,8 +117,9 @@ public class ShopService {
         shopRepo.delete(shop);
     }
 
-    public void updateStatus(UserDto userId, ShopDto shopNo, int status) {
-        ReserDto dto = reserRepo.findByUserIdAndShopNo(userId, shopNo);
+    public void updateStatus(UserDto userId, ShopDto shopNo, int status, Integer no) {
+        ReserDto dto = (ReserDto) reserRepo.findByUserIdAndShopNoAndNo(userId, shopNo, no);
+
         if (dto != null) {
             dto.setStatus(status);
             reserRepo.save(dto);

@@ -40,18 +40,16 @@ public class ReserController {
             return "redirect:/login";
         }
         List<ReserDto> manager = shopService.reserManageListByShopNo(no);
-        Long count = reserRepo.count();
-        model.addAttribute("count", count);
         model.addAttribute("managedetail",manager);
         return "reser/manager";
     }
     @PostMapping("/updateStatus")
     public String updateStatus(@RequestParam("userId") UserDto userId, @RequestParam("status")int status,
-                               @RequestParam("shopNo") ShopDto shopNo) {
+                               @RequestParam("shopNo") ShopDto shopNo, @RequestParam("no") Integer no) {
         // 예약 상태 업데이트 처리
-        shopService.updateStatus(userId, shopNo, status);
+        shopService.updateStatus(userId, shopNo, status, no);
 
         // 처리 완료 후 목록으로 리다이렉트
-        return "redirect:/reser/manager";
+        return "redirect:/reser";
     }
 }

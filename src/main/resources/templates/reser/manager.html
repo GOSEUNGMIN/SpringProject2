@@ -57,7 +57,7 @@
       </td>
       <td>
         <button type="button" style="padding:6px 12px;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal"
-                th:onclick="openModal([[*{shopNo.no}]],[[*{shopNo.name}]], [[*{reserdetail}]],
+                th:onclick="openModal([[*{no}]],[[*{shopNo.no}]],[[*{shopNo.name}]], [[*{reserdetail}]],
                 [[*{formattedresertime}]],[[*{userId.id}]],[[*{status}]])">상세보기
         </button>
       </td>
@@ -73,6 +73,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <input type="hidden" name="no" id="modalNo" value="">
         <p><strong>가게 이름:</strong> <span id="modalShopName"></span></p>
         <p><strong>요청 사항:</strong> <span id="modalReserDetail"></span></p>
         <p><strong>예약 시간:</strong> <span id="modalReserTime"></span></p>
@@ -81,21 +82,25 @@
       </div>
       <div class="modal-footer">
         <!-- 예약확정 -->
-        <form method="POST" action="/reser/updateStatus" onsubmit="return confirm('해당 고객의 예약을 확정하십니까?');">
+        <form method="POST" action="/reser/updateStatus"
+              onsubmit="return confirm('해당 고객의 예약을 확정하십니까?');">
+          <input type="hidden" name="no" id="modalNoConfirm" value="">
           <input type="hidden" name="userId" id="modalHiddenUserIdForConfirm">
           <input type="hidden" name="status" id="modalHiddenStatusForConfirm" value="2">
           <input type="hidden" name="shopNo" id="modalShopNoForConfirm" value="">
           <button type="submit" class="btn btn-success">예약확정</button>
         </form>
         <!-- 예약취소 -->
-        <form method="POST" action="/reser/updateStatus" onsubmit="return confirm('해당 고객의 예약을 취소하십니까?');">
+        <form method="POST" action="/reser/updateStatus"
+              onsubmit="return confirm('해당 고객의 예약을 취소하십니까?');">
+          <input type="hidden" name="no" id="modalNoCancel" value="">
           <input type="hidden" name="userId" id="modalHiddenUserIdForCancel">
           <input type="hidden" name="status" id="modalHiddenStatusForCancel" value="3">
           <input type="hidden" name="shopNo"  id="modalShopNoForCancel" value="">
           <button type="submit" style="padding:6px 12px;" class="btn btn-danger">예약취소</button>
         </form>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-      </div>
+        </div>
     </div>
   </div>
 </div>
@@ -109,7 +114,8 @@
     myInput.focus()
   })
   // 모달에 데이터를 채우는 함수
-  function openModal(shopNo, shopName, reserDetail, reserTime, userId, status) {
+  function openModal(no, shopNo, shopName, reserDetail, reserTime, userId, status) {
+    document.getElementById("modalNo").textContent = no;
     document.getElementById("modalShopName").textContent = shopName;
     document.getElementById("modalReserDetail").textContent = reserDetail;
     document.getElementById("modalReserTime").textContent = reserTime;
@@ -124,18 +130,35 @@
     document.getElementById('modalStatus').innerText = statusMap[status] || '알 수 없음';
 
     // 폼에 hidden 값 설정
+    document.getElementById("modalNoConfirm").value = no;
+    document.getElementById("modalNoCancel").value = no;
     document.getElementById("modalShopNoForConfirm").value = shopNo;
     document.getElementById("modalShopNoForCancel").value = shopNo;
     document.getElementById("modalHiddenUserIdForConfirm").value = userId;
     document.getElementById("modalHiddenUserIdForCancel").value = userId;
 
-    // 예약 확정 / 예약 취소 버튼에 맞게 status 값 설정
-    if (status === 2) {
-      document.getElementById("modalHiddenStatusForConfirm").value = 2; // 예약 확정
-      document.getElementById("modalHiddenStatusForCancel").value = 3; // 예약 취소
-    } else {
-      document.getElementById("modalHiddenStatusForConfirm").value = 3; // 예약 취소
-      document.getElementById("modalHiddenStatusForCancel").value = 2; // 예약 확정
+    const confirmButton = document.querySelector("#modalHiddenStatusForConfirm").parentElement;
+    const cancelButton = document.querySelector("#modalHiddenStatusForCancel").parentElement;
+
+    // 상태가 1(예약대기)일 때 예약확정과 예약취소 버튼 모두 보이도록
+    if (status === 1) {
+      confirmButton.style.display = "block";
+      cancelButton.style.display = "block";
+    }
+    // 상태가 2(예약완료)일 때 예약취소 버튼만 보이도록
+    else if (status === 2) {
+      confirmButton.style.display = "none";
+      cancelButton.style.display = "block";
+    }
+    // 상태가 3(예약취소)일 때 예약확정 버튼만 보이도록
+    else if (status === 3) {
+      confirmButton.style.display = "block";
+      cancelButton.style.display = "none";
+    }
+    // 기본적으로 버튼 숨기기 (예외 처리)
+    else {
+      confirmButton.style.display = "none";
+      cancelButton.style.display = "none";
     }
   }
 </script>
