@@ -6,12 +6,13 @@ import com.example.project2.dto.UserDto;
 import com.example.project2.repository.ReserRepo;
 import com.example.project2.repository.ShopRepo;
 import com.example.project2.repository.UserRepo;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +23,7 @@ public class ShopService {
     private final ShopRepo shopRepo;
     private final ReserRepo reserRepo;
     private final HttpSession session;
+    private final MailService mailService;
 
     public boolean login(UserDto dto) {
         Optional<UserDto> result = userRepo.findByIdAndPassword(dto.getId(), dto.getPassword());
@@ -61,9 +63,17 @@ public class ShopService {
         return reserRepo.findByShopNoOrderByNoDesc(shop);
     }
 
-    public void reserSave(ReserDto dto) {
+    public void reserSave(ReserDto dto) throws MessagingException {
         dto.setStatus(1);
         reserRepo.save(dto);
+
+        ShopDto shop = shopRepo.findById(dto.getShopNo().getNo()).orElseThrow(() -> new RuntimeException("Shop not"));
+        UserDto user = (UserDto) session.getAttribute("user");
+
+        String mail = shop.getUserId().getEmail();
+
+        mailService.sendReserMail(mail, user.getId(), shop.getName(),
+                dto.getResertime().toString(), dto.getReserdetail());
     }
 
     @Transactional

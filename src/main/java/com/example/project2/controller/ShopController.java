@@ -5,6 +5,7 @@ import com.example.project2.dto.ShopDto;
 import com.example.project2.dto.UserDto;
 import com.example.project2.repository.ReserRepo;
 import com.example.project2.service.ShopService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -123,7 +124,7 @@ public class ShopController {
     }
 
     @PostMapping("/reserve/{no}")
-    public String reserve(ReserDto dto) {
+    public String reserve(ReserDto dto) throws MessagingException {
         shopService.reserSave(dto);
         return "redirect:/mypage";
     }
