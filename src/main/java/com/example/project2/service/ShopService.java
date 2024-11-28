@@ -25,22 +25,18 @@ public class ShopService {
     private final ReserRepo reserRepo;
     private final HttpSession session;
     private final MailService mailService;
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final BatchService batchService;
 
     public boolean login(UserDto dto) {
         Optional<UserDto> result = userRepo.findByIdAndPassword(dto.getId(), dto.getPassword());
-        boolean loginCheck;
 
         if (result.isEmpty()) {
-            loginCheck = false;
-        }
-        else {
+            return false;
+        } else {
             session.setAttribute("user", result.get());
-            loginCheck = true;
+            batchService.loginSuccess();
+            return true;
         }
-
-        return loginCheck;
     }
 
     public String register(UserDto dto, String passwordCheck) {
@@ -118,7 +114,7 @@ public class ShopService {
     }
 
     public void updateStatus(UserDto userId, ShopDto shopNo, int status, Integer no) {
-        ReserDto dto = (ReserDto) reserRepo.findByUserIdAndShopNoAndNo(userId, shopNo, no);
+        ReserDto dto = reserRepo.findByUserIdAndShopNoAndNo(userId, shopNo, no);
 
         if (dto != null) {
             dto.setStatus(status);

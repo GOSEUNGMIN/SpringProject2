@@ -1,6 +1,7 @@
 package com.example.project2.controller;
 
 import com.example.project2.dto.UserDto;
+import com.example.project2.service.BatchService;
 import com.example.project2.service.ShopService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/")
 public class LoginController {
     private final ShopService shopService;
+    private final BatchService batchService;
     private final HttpSession session;
 
     @GetMapping("/login")
@@ -32,6 +34,7 @@ public class LoginController {
     public String login(@Validated UserDto dto, Model model) {
         Boolean check = shopService.login(dto);
         if (check == true) {
+            batchService.sendLogin();
             return "redirect:/";
         }
         else {
